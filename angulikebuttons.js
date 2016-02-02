@@ -36,17 +36,24 @@
               return {
                   restrict: 'A',
                   scope: {
-                      fbLike: '=?'
+                      fbLike: '=?',
+                      fbType       : '@fbType',
+                      fbShare      : '@fbShare',
+                      fbShowFaces  : '@fbShowFaces',
+                      fbActionType : '@fbActionType',
+                      fbButtonLang : '@fbButtonLang'
                   },
                   link: function (scope, element, attrs) {
                       if (!$window.FB) {
                           // Load Facebook SDK if not already loaded
-                          var lang = $rootScope.facebookLang;
-                          if(!lang) {
-                            lang = 'en_US';
-                          }
+                          scope.fbType       = ( scope.fbType === undefined ? 'standard' : scope.fbType );
+                          scope.fbShare      = ( scope.fbShare === undefined ? 'true' : scope.fbShare );
+                          scope.fbShowFaces  = ( scope.fbShowFaces === undefined ? 'true' : scope.fbShowFaces );
+                          scope.fbActionType = ( scope.fbActionType === undefined ? 'like' : scope.fbActionType );
+                          scope.fbButtonLang = ( scope.fbButtonLang === undefined ? 'en_US' : scope.fbButtonLang );
+
                           loadScript(
-                            'fb-script', '//connect.facebook.net/'+lang+'/sdk.js', 
+                            'fb-script', '//connect.facebook.net/'+ scope.fbButtonLang + '/sdk.js', 
                             function(){
                               $window.FB.init({
                                 appId: $rootScope.facebookAppId,
@@ -77,7 +84,7 @@
                               });
                               return;
                           } else {
-                              element.html('<div class="fb-like"' + (!!scope.fbLike ? ' data-href="' + scope.fbLike + '"' : '') + ' data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>');
+                              element.html('<div class="fb-like"' + (!!scope.fbLike ? ' data-href="' + scope.fbLike + '"' : '') + ' data-layout="' + scope.fbType + '" data-action="' + scope.fbActionType + '" data-show-faces="' + scope.fbShowFaces + '" data-share="' + scope.fbShare + '"></div>');
                               $window.FB.XFBML.parse(element.parent()[0]);
                           }
                       }
